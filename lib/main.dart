@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:todoapp/models/todo_list.dart';
 import 'models/todo.dart';
-
+import 'package:provider/provider.dart';
 void main() {
-  runApp(const TodoApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => TodoList(),
+    child: const TodoApp()));
 }
 
 
@@ -34,11 +37,13 @@ final List<Todo> todos = <Todo>[
   Todo(name:"Tax",description: "Review tax")
 ];
 
+int get todosLength => todos.length;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Todo\'s'),
+        title: Text('Todo\'s \nAll tasks: $todosLength'),
         actions: const [
           Icon(Icons.menu),
         ],
@@ -46,25 +51,22 @@ final List<Todo> todos = <Todo>[
       body: Container(
         padding: const EdgeInsets.all(10),
         child: Center(
-          child: ListView.builder(
-              itemCount: todos.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  margin: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.black,
-                      width: 2,
-                    )
-                  ),
-                  padding: const EdgeInsets.all(2.5),
-                  child:  Text(todos[index].name.toString(),
-                  textAlign: TextAlign.center),
-                );
-              },)
-          
-        )),
-      );
-    
+          child: Consumer<TodoList>(
+            builder: (context, model, child){
+              return ListView.builder(
+                itemCount: todos.length,
+                itemBuilder: (context, index) {
+                  final todo = todos[index];
+                  return ListTile(
+                    title: Text(todo.name),
+                    subtitle: Text(todo.description),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ),
+    );
   }
 }
