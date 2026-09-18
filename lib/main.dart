@@ -32,9 +32,9 @@ class TodoHomePage extends StatefulWidget {
 class _TodoHomePageState extends State<TodoHomePage> {
 
 final List<Todo> todos = <Todo>[
-  Todo(name:"Shopping",description: "Milk, Eggs, Bread"),
-  Todo(name:"Soccer",description: "Go play"),
-  Todo(name:"Tax",description: "Review tax")
+  Todo(id: 1, name:"Shopping",description: "Milk, Eggs, Bread"),
+  Todo(id: 2, name:"Soccer",description: "Go play"),
+  Todo(id: 3, name:"Tax",description: "Review tax")
 ];
 
 int get todosLength => todos.length;
@@ -44,6 +44,7 @@ int get todosLength => todos.length;
     return Scaffold(
       appBar: AppBar(
         title: Text('Todo\'s \nAll tasks: $todosLength'),
+        
         actions: const [
           Icon(Icons.menu),
         ],

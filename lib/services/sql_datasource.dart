@@ -25,32 +25,50 @@ class SQLDataSource implements IDataSource {
   }
 
   @override
-  Future<bool> add(Todo model) {
-    // TODO: implement add
-    throw UnimplementedError();
+  Future<bool> add(Todo model) async {
+    Map<String, dynamic> data = model.toMap();
+    data.remove("id");
+    int id = await _database.insert("todo", data);
+    model.id = id;
+    return true;
   }
 
   @override
-  Future<List<Todo>> browse() {
-    // TODO: implement browse
-    throw UnimplementedError();
+  Future<List<Todo>> browse() async {
+    List<Map<String, dynamic>> maps = await _database.query('todos');
+    return List.generate(maps.length, (index) {
+      return Todo.fromMap(maps[index]);
+    });
   }
 
   @override
-  Future<bool> delete(Todo model) {
-    // TODO: implement delete
-    throw UnimplementedError();
+  Future<bool> delete(Todo model) async {
+      int deleted = await _database.delete(
+        "todo",
+        where: 'id=?',
+        whereArgs: [model.id],
+      );
+    return deleted == 1;
   }
 
   @override
-  Future<bool> edit(Todo model) {
-    // TODO: implement edit
-    throw UnimplementedError();
+  Future<bool> edit(Todo model) async {
+     int editted = await _database.update(
+      "todo",
+      model.toMap(),
+      where: 'id=?',
+      whereArgs: [model.id],
+    );
+    return editted == 1;
   }
 
   @override
-  Future<bool> read(String id) {
-    // TODO: implement read
-    throw UnimplementedError();
+  Future<Todo?> read(String id) async {
+    List<Map<String, dynamic>> items = await _database.query(
+      'todo',
+      where: 'id=?',
+      whereArgs: [id],
+    );
+    return items.isEmpty ? null : Todo.fromMap(items.first);
   }
 }
