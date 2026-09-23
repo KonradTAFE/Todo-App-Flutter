@@ -5,6 +5,7 @@ import 'package:todoapp/models/todo_list.dart';
 import 'package:todoapp/services/sql_datasource.dart';
 import 'package:todoapp/services/todo_datasource.dart';
 import 'package:todoapp/views/todo_widget.dart';
+import 'package:todoapp/views/add_todo_dialog.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,17 +30,17 @@ class TodoApp extends StatelessWidget {
   }
 }
 
-class TodoHomePage extends StatefulWidget {
+class TodoHomePage extends StatelessWidget {
   const TodoHomePage({super.key});
 
   @override
-  State<TodoHomePage> createState() => _TodoHomePageState();
-}
-
-class _TodoHomePageState extends State<TodoHomePage> {
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => showAddTodoDialog(context),
+        tooltip: 'Add task',
+        child: const Icon(Icons.add),
+      ),
       appBar: AppBar(
         title: const Text('Todos'),
         actions: [
