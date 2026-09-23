@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todoapp/models/todo.dart';
 import 'package:todoapp/models/todo_list.dart';
+import 'package:todoapp/views/edit_todo_dialog.dart';
 
 class TodoWidget extends StatefulWidget {
   const TodoWidget({Key? key, required this.todo}) : super(key: key);
@@ -66,22 +67,48 @@ Widget build(BuildContext context) {
       child: const Icon(Icons.delete, color: Colors.white),
     ),
     child: Card(
-      margin: const EdgeInsets.all(5),
-      child: CheckboxListTile(
-        title: Text(
-          widget.todo.name,
-          style: TextStyle(
-            decoration: _completed
-                ? TextDecoration.lineThrough
-                : TextDecoration.none,
+  margin: const EdgeInsets.all(5),
+  child: Padding(
+    padding: const EdgeInsets.all(8),
+    child: Row(
+      children: [
+        Checkbox(
+          value: _completed,
+          onChanged: _updateCompleted,
+        ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.todo.name,
+                style: TextStyle(
+                  fontSize: 16,
+                  decoration: _completed
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none,
+                ),
+              ),
+              Text(widget.todo.description),
+            ],
           ),
         ),
-        subtitle: Text(widget.todo.description),
-        value: _completed,
-        onChanged: _updateCompleted,
-        controlAffinity: ListTileControlAffinity.leading,
-      ),
+        IconButton(
+          onPressed: () => showEditTodoDialog(context, widget.todo),
+          icon: const Icon(Icons.edit),
+          iconSize: 30,
+          tooltip: 'Edit task',
+        ),
+        IconButton(
+          onPressed: _deleteTodo,
+          icon: const Icon(Icons.delete),
+          iconSize: 30,
+          color: Colors.red,
+          tooltip: 'Delete task',
+        ),
+      ],
     ),
-  );
+  ),
+));
 }
 }
