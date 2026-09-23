@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:todoapp/models/todo_list.dart';
-import 'models/todo.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-void main() {
-  runApp(ChangeNotifierProvider(
-    create: (context) => TodoList(),
-    child: const TodoApp()));
-}
+import 'package:todoapp/models/todo_list.dart';
+import 'package:todoapp/services/sql_datasource.dart';
+import 'package:todoapp/services/todo_datasource.dart';
+import 'package:todoapp/views/todo_widget.dart';
 
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Get.putAsync<IDataSource>(() => SQLDataSource.createAsync());
+  TodoList todos = TodoList();
+  await todos.refresh();
+  runApp(
+    ChangeNotifierProvider(create: (context) => todos, child: const TodoApp()),
+  );
+}
 
 class TodoApp extends StatelessWidget {
   const TodoApp({super.key});
@@ -15,7 +22,7 @@ class TodoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      title: "Todo App",
+      title: 'Todo App',
       home: TodoHomePage(),
       debugShowCheckedModeBanner: false,
     );
@@ -30,39 +37,37 @@ class TodoHomePage extends StatefulWidget {
 }
 
 class _TodoHomePageState extends State<TodoHomePage> {
-
-final List<Todo> todos = <Todo>[
-  Todo(id: 1, name:"Shopping",description: "Milk, Eggs, Bread"),
-  Todo(id: 2, name:"Soccer",description: "Go play"),
-  Todo(id: 3, name:"Tax",description: "Review tax")
-];
-
-int get todosLength => todos.length;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Todo\'s \nAll tasks: $todosLength'),
-        
-        actions: const [
-          Icon(Icons.menu),
+        title: const Text('Todos'),
+        actions: [
+          Consumer<TodoList>(
+            builder: (context, model, child) {
+              return Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text('Not completed: ${model.incompleteCount}'),
+              );
+            },
+          ),
+          const Icon(Icons.menu),
         ],
       ),
       body: Container(
         padding: const EdgeInsets.all(10),
         child: Center(
           child: Consumer<TodoList>(
-            builder: (context, model, child){
-              return ListView.builder(
-                itemCount: todos.length,
-                itemBuilder: (context, index) {
-                  final todo = todos[index];
-                  return ListTile(
-                    title: Text(todo.name),
-                    subtitle: Text(todo.description),
-                  );
-                },
+            builder: (context, model, child) {
+              return RefreshIndicator(
+                onRefresh: model.refresh,
+                child: ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  itemCount: model.todoCount,
+                  itemBuilder: (BuildContext context, int index) {
+                    return TodoWidget(todo: model.todos[index]);
+                  },
+                ),
               );
             },
           ),

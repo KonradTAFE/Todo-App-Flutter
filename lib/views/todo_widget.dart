@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todoapp/models/todo.dart';
 
 class TodoWidget extends StatefulWidget {
-  const TodoWidget({required this.todo, super.key});
+  const TodoWidget({Key? key, required this.todo}) : super(key: key);
 
 final Todo todo;
   @override
