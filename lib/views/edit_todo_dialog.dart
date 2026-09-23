@@ -23,6 +23,23 @@ class _EditTodoDialogState extends State<EditTodoDialog> {
   late final TextEditingController _nameController;
   late final TextEditingController _descriptionController;
 
+  DateTime? _dueDate;
+
+Future<void> _pickDueDate() async {
+  final selectedDate = await showDatePicker(
+    context: context,
+    initialDate: _dueDate ?? DateTime.now(),
+    firstDate: DateTime(2000),
+    lastDate: DateTime(2100),
+  );
+
+  if (!mounted || selectedDate == null) return;
+
+  setState(() {
+    _dueDate = selectedDate;
+  });
+}
+
   @override
   void initState() {
     super.initState();
@@ -30,6 +47,7 @@ class _EditTodoDialogState extends State<EditTodoDialog> {
     _descriptionController = TextEditingController(
       text: widget.todo.description,
     );
+    _dueDate = widget.todo.dueDate;
   }
 
   Future<void> _saveTodo() async {
@@ -41,6 +59,9 @@ class _EditTodoDialogState extends State<EditTodoDialog> {
       name: name,
       description: _descriptionController.text.trim(),
       completed: widget.todo.completed,
+      createdAt: widget.todo.createdAt,
+      updatedAt: DateTime.now(),
+      dueDate: _dueDate,
     );
 
     final model = Provider.of<TodoList>(context, listen: false);
@@ -71,6 +92,32 @@ class _EditTodoDialogState extends State<EditTodoDialog> {
           TextFormField(
             controller: _descriptionController,
             decoration: const InputDecoration(labelText: 'Description'),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: TextButton.icon(
+                  onPressed: _pickDueDate,
+                  icon: const Icon(Icons.calendar_today),
+                  label: Text(
+                    _dueDate == null
+                        ? 'Set due date'
+                        : MaterialLocalizations.of(context)
+                            .formatMediumDate(_dueDate!),
+                  ),
+                ),
+              ),
+              if (_dueDate != null)
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _dueDate = null;
+                    });
+                  },
+                  icon: const Icon(Icons.clear),
+                  tooltip: 'Remove due date',
+                ),
+            ],
           ),
         ],
       ),

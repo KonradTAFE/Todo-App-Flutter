@@ -21,22 +21,44 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
+  DateTime? _dueDate;
+
+Future<void> _pickDueDate() async {
+  final selectedDate = await showDatePicker(
+    context: context,
+    initialDate: _dueDate ?? DateTime.now(),
+    firstDate: DateTime(2000),
+    lastDate: DateTime(2100),
+  );
+
+  if (!mounted || selectedDate == null) return;
+
+  setState(() {
+    _dueDate = selectedDate;
+  });
+}
+
   Future<void> _addTodo() async {
-    final name = _nameController.text.trim();
-    if (name.isEmpty) return;
+  final name = _nameController.text.trim();
+  if (name.isEmpty) return;
 
-    final model = Provider.of<TodoList>(context, listen: false);
-    await model.add(
-      Todo(
-        id: null,
-        name: name,
-        description: _descriptionController.text.trim(),
-      ),
-    );
+  final now = DateTime.now();
 
-    if (!mounted) return;
-    Navigator.pop(context);
-  }
+  final todo = Todo(
+    id: null,
+    name: name,
+    description: _descriptionController.text.trim(),
+    createdAt: now,
+    updatedAt: now,
+    dueDate: _dueDate,
+  );
+
+  final model = Provider.of<TodoList>(context, listen: false);
+  await model.add(todo);
+
+  if (!mounted) return;
+  Navigator.pop(context);
+}
 
   @override
   void dispose() {
@@ -59,6 +81,32 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
           TextFormField(
             controller: _descriptionController,
             decoration: const InputDecoration(labelText: 'Description'),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: TextButton.icon(
+                  onPressed: _pickDueDate,
+                  icon: const Icon(Icons.calendar_today),
+                  label: Text(
+                    _dueDate == null
+                        ? 'Set due date'
+                        : MaterialLocalizations.of(context)
+                            .formatMediumDate(_dueDate!),
+                  ),
+                ),
+              ),
+              if (_dueDate != null)
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _dueDate = null;
+                    });
+                  },
+                  icon: const Icon(Icons.clear),
+                  tooltip: 'Remove due date',
+                ),
+            ],
           ),
         ],
       ),

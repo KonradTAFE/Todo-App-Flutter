@@ -36,6 +36,9 @@ class _TodoWidgetState extends State<TodoWidget> {
       name: widget.todo.name,
       description: widget.todo.description,
       completed: value,
+      createdAt: widget.todo.createdAt,
+      updatedAt: DateTime.now(),
+      dueDate: widget.todo.dueDate,
     );
 
     final model = Provider.of<TodoList>(context, listen: false);
@@ -90,6 +93,13 @@ Widget build(BuildContext context) {
                 ),
               ),
               Text(widget.todo.description),
+              if (widget.todo.dueDate != null)
+              Text(
+                'Due: ${MaterialLocalizations.of(context).formatMediumDate(
+                  widget.todo.dueDate!,
+                )}',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ],
           ),
         ),
