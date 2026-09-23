@@ -13,6 +13,7 @@ final Todo todo;
 
 class _TodoWidgetState extends State<TodoWidget> {
   late bool _completed;
+  final GlobalKey _dismissibleKey = GlobalKey();
 
   @override
   void initState() {
@@ -46,9 +47,25 @@ class _TodoWidgetState extends State<TodoWidget> {
     });
   }
 
+  Future<void> _deleteTodo() async {
+    final model = Provider.of<TodoList>(context, listen: false);
+    await model.remove(widget.todo);
+  }
+
   @override
-  Widget build(BuildContext context) {
-    return Card(
+Widget build(BuildContext context) {
+  return Dismissible(
+    key: _dismissibleKey,
+    onDismissed: (direction) async {
+      await _deleteTodo();
+    },
+    background: Container(
+      color: Colors.red,
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.only(left: 20),
+      child: const Icon(Icons.delete, color: Colors.white),
+    ),
+    child: Card(
       margin: const EdgeInsets.all(5),
       child: CheckboxListTile(
         title: Text(
@@ -64,6 +81,7 @@ class _TodoWidgetState extends State<TodoWidget> {
         onChanged: _updateCompleted,
         controlAffinity: ListTileControlAffinity.leading,
       ),
-    );
-  }
+    ),
+  );
+}
 }

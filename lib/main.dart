@@ -66,7 +66,8 @@ class TodoHomePage extends StatelessWidget {
                   physics: const AlwaysScrollableScrollPhysics(),
                   itemCount: model.todoCount,
                   itemBuilder: (BuildContext context, int index) {
-                    return TodoWidget(todo: model.todos[index]);
+                    return TodoWidget(key: ValueKey(model.todos[index].id),
+                                      todo: model.todos[index]);
                   },
                 ),
               );
