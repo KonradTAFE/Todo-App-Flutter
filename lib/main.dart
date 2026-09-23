@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:todoapp/models/todo_list.dart';
-import 'package:todoapp/services/sql_datasource.dart';
+// import 'package:todoapp/services/sql_datasource.dart';
+import 'package:todoapp/services/hive_datasource.dart';
 import 'package:todoapp/services/todo_datasource.dart';
 import 'package:todoapp/views/todo_widget.dart';
 import 'package:todoapp/views/add_todo_dialog.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Get.putAsync<IDataSource>(() => SQLDataSource.createAsync());
+  // await Get.putAsync<IDataSource>(() => SQLDataSource.createAsync());
+  await Get.putAsync<IDataSource>(() => HiveDataSource.createAsync());
   TodoList todos = TodoList();
   await todos.refresh();
   runApp(
