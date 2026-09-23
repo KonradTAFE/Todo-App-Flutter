@@ -19,7 +19,7 @@ class SQLDataSource implements IDataSource {
 
     _database = await openDatabase(
   join(await getDatabasesPath(), 'todo_data.db'),
-  version: 4,
+  version: 1,
   onCreate: (db, version) async {
     await db.execute(
       '''
@@ -34,25 +34,6 @@ class SQLDataSource implements IDataSource {
       )
       ''',
     );
-  },
-  onUpgrade: (db, oldVersion, newVersion) async {
-    if (oldVersion < 2) {
-      await db.execute(
-        'ALTER TABLE todos ADD COLUMN created_at TEXT',
-      );
-    }
-
-    if (oldVersion < 3) {
-      await db.execute(
-        'ALTER TABLE todos ADD COLUMN updated_at TEXT',
-      );
-    }
-
-    if (oldVersion < 4) {
-      await db.execute(
-        'ALTER TABLE todos ADD COLUMN due_date TEXT',
-      );
-    }
   },
 );
   }
