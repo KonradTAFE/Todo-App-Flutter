@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 @HiveType(typeId: 0)
 class Todo {
   @HiveField(0)
-  int? id;
+  String? id;
   @HiveField(1)
   final String name;
   @HiveField(2)
@@ -44,24 +44,19 @@ class Todo {
     };
   }
 
-    factory Todo.fromMap(Map<String, dynamic> map) {
-      final complete = map['complete'];
-      final createdAt = map['created_at'];
-      final updatedAt = map['updated_at'];
-      
+  factory Todo.fromMap(Map<String, dynamic> map) {
+    final complete = map['complete'];
+    final createdAt = map['created_at'];
+    final updatedAt = map['updated_at'];
 
     return Todo(
-      id: map['id'],
+      id: map['id']?.toString(),
       name: map['name'],
       description: map['description'],
       completed: complete == true || complete == 1,
-      createdAt: createdAt == null
-          ? null
-          : DateTime.parse(createdAt as String),
-      updatedAt: updatedAt == null
-          ? null
-          : DateTime.parse(updatedAt as String),
-          dueDate: map['due_date'] == null
+      createdAt: createdAt == null ? null : DateTime.parse(createdAt as String),
+      updatedAt: updatedAt == null ? null : DateTime.parse(updatedAt as String),
+      dueDate: map['due_date'] == null
           ? null
           : DateTime.parse(map['due_date'] as String),
     );
@@ -75,7 +70,7 @@ class TodoAdapter extends TypeAdapter<Todo> {
   @override
   Todo read(BinaryReader reader) {
     return Todo(
-      id: reader.read() as int?,
+      id: reader.read()?.toString(),
       name: reader.read() as String,
       description: reader.read() as String,
       completed: reader.read() as bool,

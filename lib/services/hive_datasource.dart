@@ -39,7 +39,7 @@ class HiveDataSource implements IDataSource {
     final id = await _box.add(model);
 
     // Save Hive's generated key inside the Todo as well.
-    model.id = id;
+    model.id = id.toString();
     await _box.put(id, model);
 
     return true;
@@ -47,7 +47,7 @@ class HiveDataSource implements IDataSource {
 
   @override
   Future<bool> edit(Todo model) async {
-    final id = model.id;
+    final id = int.tryParse(model.id ?? '');
     if (id == null || !_box.containsKey(id)) return false;
 
     await _box.put(id, model);
@@ -56,7 +56,7 @@ class HiveDataSource implements IDataSource {
 
   @override
   Future<bool> delete(Todo model) async {
-    final id = model.id;
+    final id = int.tryParse(model.id ?? '');
     if (id == null || !_box.containsKey(id)) return false;
 
     await _box.delete(id);

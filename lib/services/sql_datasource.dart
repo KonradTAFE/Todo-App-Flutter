@@ -17,11 +17,10 @@ class SQLDataSource implements IDataSource {
     }
 
     _database = await openDatabase(
-  join(await getDatabasesPath(), 'todo_data.db'),
-  version: 1,
-  onCreate: (db, version) async {
-    await db.execute(
-      '''
+      join(await getDatabasesPath(), 'todo_data.db'),
+      version: 1,
+      onCreate: (db, version) async {
+        await db.execute('''
       CREATE TABLE todos (
         id INTEGER PRIMARY KEY,
         name TEXT,
@@ -31,10 +30,9 @@ class SQLDataSource implements IDataSource {
         updated_at TEXT,
         due_date TEXT
       )
-      ''',
+      ''');
+      },
     );
-  },
-);
   }
 
   static Future<IDataSource> createAsync() async {
@@ -48,7 +46,7 @@ class SQLDataSource implements IDataSource {
     Map<String, dynamic> data = model.toMap();
     data.remove("id");
     int id = await _database.insert("todos", data);
-    model.id = id;
+    model.id = id.toString();
     return true;
   }
 
