@@ -49,12 +49,19 @@ class TodoHomePage extends StatelessWidget {
           Consumer<TodoList>(
             builder: (context, model, child) {
               return Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text('Not completed: ${model.incompleteCount}'),
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text('Not completed: ${model.incompleteCount}'),
+                        Text('Overdue: ${model.overdueCount}'),
+                      ],
+                    )
               );
             },
           ),
-          const Icon(Icons.menu),
+          
         ],
       ),
       body: Container(

@@ -11,6 +11,18 @@ class TodoList extends ChangeNotifier {
   UnmodifiableListView<Todo> get todos => UnmodifiableListView(_todos);
   int get todoCount => _todos.length;
   int get incompleteCount => _todos.where((todo) => !todo.completed).length;
+  int get overdueCount {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    return _todos.where((todo) {
+      final dueDate = todo.dueDate;
+
+      return !todo.completed &&
+          dueDate != null &&
+          dueDate.isBefore(today);
+    }).length;
+  }
 
   Future<void> refresh() async {
     IDataSource dataSource = Get.find<IDataSource>();
